@@ -64,11 +64,17 @@ def insert(qry, data):
 		except IntegrityError as e:
 			print('[*]', e, i)
 			continue
+# 입력으로 튜플 한개를 받는다.
+# 튜플은 세 개의 원소를 갖는데
+# 첫번째는 테이블 번호
+# 두번째와 세번째는 칼럼 번호를 입력한다.
+def batch(_tuple):
+	l = tr(_tuple[0])
+	d = span(l, _tuple[1:])
+	insert('insert into isac values (?,?,?)', d)
 
 def main():
-	l = tr(4)
-	d = span(l, (1, 3))
-	insert('insert into isac values (?,?,?)', d)
+	batch((4, 1, 3))
 	# 마찬가지 이유로 데이터베이스의 잦은 입출력 방지를 위해서
 	# 모든 작업이 끝나고 마지막에 데이터베이스 연결을 끊는다.
 	con.commit()
