@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from sqlite3 import connect
+from sqlite3 import connect, IntegrityError
 from bs4 import BeautifulSoup
 from sys import argv
 import re
@@ -19,6 +19,13 @@ date = m.group(1)
 
 # html 파싱을 위해 BeautifulSoup 객체를 생성
 s = BeautifulSoup(b, 'html.parser')
+
+# 데이터베이스에 연결한다.
+# 함수 안에 선언하면 데이터가 입력 될 때마다
+# 연결을 하기 때문에 속도면에서 손해이므로
+# 함수 밖에서 먼저 연결 객체를 생성한다.
+con = connect('blacklist.db')
+cur = con.cursor()
 
 # 입력으로 테이블 번호를 받는다.
 # tbody 태그를 모두 찾은 뒤에
@@ -45,3 +52,27 @@ def span(_list, _tuple):
 		span = i.find_all('span')
 		t.append((span[a].string, span[b].string))
 	return t
+
+# 데이터를 데이터베이스에 입력한다.
+# 첫번째 인자로 데이터베이스 쿼리를 입력한다.
+# 두번째 인자로 입력할 데이터를 받는다.
+# 중복 방지를 위해서 에러를 이용한다.
+def insert(qry, data):
+	for i in data:
+		try:
+			cur.execute(qry, (date, i[0], i[1]))
+		except IntegrityError as e:
+			print('[*]', e, i)
+			continue
+
+def main():
+	l = tr(4)
+	d = span(l, (1, 3))
+	insert('insert into isac values (?,?,?)', d)
+	# 마찬가지 이유로 데이터베이스의 잦은 입출력 방지를 위해서
+	# 모든 작업이 끝나고 마지막에 데이터베이스 연결을 끊는다.
+	con.commit()
+	con.close()
+	
+if __name__ == '__main__':
+	main()
