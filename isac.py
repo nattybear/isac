@@ -73,8 +73,17 @@ def batch(_tuple):
 	d = span(l, _tuple[1:])
 	insert('insert into isac values (?,?,?)', d)
 
+# 전자적 침해 시도와
+# 피싱/파밍사이트 내역에서 아이피 주소만을 
+# 파싱하기 위한 정규식 함수
+def getip(text):
+	p = re.compile('(\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}) [(]')
+	m = p.findall(text)
+	print(m)
+
 def main():
 	batch((4, 1, 3))
+	batch((6, 1, 3))
 	# 마찬가지 이유로 데이터베이스의 잦은 입출력 방지를 위해서
 	# 모든 작업이 끝나고 마지막에 데이터베이스 연결을 끊는다.
 	con.commit()
