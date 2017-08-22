@@ -35,8 +35,7 @@ def tr(num):
 	a = s.find_all('tbody')
 	b = a[int(num)]
 	c = b.find_all('tr')
-	# 테이블 헤더는 제외하고 리턴
-	return c[1:]
+	return c
 
 # 첫번째 인자로 tr 태그의 리스트를 받는다.
 # 두번째 인자로 출력할 칼럼 번호를 받는다.
@@ -48,7 +47,8 @@ def span(_list, _tuple):
 	t = []
 	# 파싱 할 칼럼 번호를 지정
 	a, b = _tuple
-	for i in _list:
+	# 테이블 헤더는 제외
+	for i in _list[1:]:
 		span = i.find_all('span')
 		t.append((span[a].string, span[b].string))
 	return t
@@ -64,6 +64,7 @@ def insert(qry, data):
 		except IntegrityError as e:
 			print('[*]', e, i)
 			continue
+
 # 입력으로 튜플 한개를 받는다.
 # 튜플은 세 개의 원소를 갖는데
 # 첫번째는 테이블 번호
@@ -73,17 +74,23 @@ def batch(_tuple):
 	d = span(l, _tuple[1:])
 	insert('insert into isac values (?,?,?)', d)
 
-# 전자적 침해 시도와
-# 피싱/파밍사이트 내역에서 아이피 주소만을 
-# 파싱하기 위한 정규식 함수
+# 전자적 침해 시도에서 아이피 주소와 공격 유형을 파싱하는 정규식 함수
+# 테이블의 태그를 이용하지 않고 처음부터 끝까지 정규식만을 이용해서 작성
+# 테이블 칼럼이 기존 테이블과 다르기 때문에 이렇게 작성함
 def getip(text):
-	p = re.compile('(\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}) [(]')
+	p = re.compile(r"(\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}) [(].{,750}11pt;'>&nbsp;(.+?)</span></p>", re.DOTALL)
 	m = p.findall(text)
-	print(m)
+	return m
 
 def main():
+	# 요주의 IP 탐지현황 테이블 작업하기
+	# 요주의 IP 탐지현황 테이블은 4번째 테이블이다.
 	batch((4, 1, 3))
+	# 신규 요주의 IP는 6번째 테이블이다.
 	batch((6, 1, 3))
+	# 전자적 침해시도 주요 내역은 정규식으로 작업한다.
+	data = getip(b)
+	insert('insert into isac values (?,?,?)', data)
 	# 마찬가지 이유로 데이터베이스의 잦은 입출력 방지를 위해서
 	# 모든 작업이 끝나고 마지막에 데이터베이스 연결을 끊는다.
 	con.commit()
