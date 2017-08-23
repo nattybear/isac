@@ -10,3 +10,7 @@ CREATE TABLE IF NOT EXISTS country (
 	name text
 );
 
+CREATE TABLE IF NOT EXISTS type (
+	id integer primary key,
+	name text
+);
