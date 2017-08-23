@@ -4,3 +4,9 @@ CREATE TABLE IF NOT EXISTS isac (
 	type text,
 	primary key (date, ip, type)
 );
+
+CREATE TABLE IF NOT EXISTS country (
+	code text primary key,
+	name text
+);
+
