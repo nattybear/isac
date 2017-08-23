@@ -22,6 +22,11 @@ for i in b:
 	idx = i.find(',')
 	cc = i[:idx]
 	name = i[idx+1:]
+	# 이름 뒤에 개행 글자가 있다면 삭제한다.	
+	if name[-1] == '\n':
+		name = name[:-1]
+	# 임시 변수 t에 국가코드와 국가명을 튜플로 저장한다.
+	# 이 변수는 데이터베이스 입력시 쿼리에 인수로 넣어줄 것이다.
 	t = cc, name
 	try:
 		cur.execute(qry, t)
