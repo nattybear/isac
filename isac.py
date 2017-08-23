@@ -82,6 +82,15 @@ def getip(text):
 	m = p.findall(text)
 	return m
 
+# 피싱/파밍사이트 정규식
+def phising(text):
+	p = re.compile('(\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}) [(].{,10}[)].{20}<td val', re.DOTALL)
+	m = p.findall(text)
+	t = []
+	for i in m:
+		t.append((i, '피싱사이트'))
+	return t
+
 def main():
 	# 요주의 IP 탐지현황 테이블 작업하기
 	# 요주의 IP 탐지현황 테이블은 4번째 테이블이다.
@@ -90,6 +99,9 @@ def main():
 	batch((6, 1, 3))
 	# 전자적 침해시도 주요 내역은 정규식으로 작업한다.
 	data = getip(b)
+	insert('insert into isac values (?,?,?)', data)
+	# 피싱/파밍사이트 작업
+	data = phising(b)
 	insert('insert into isac values (?,?,?)', data)
 	# 마찬가지 이유로 데이터베이스의 잦은 입출력 방지를 위해서
 	# 모든 작업이 끝나고 마지막에 데이터베이스 연결을 끊는다.
