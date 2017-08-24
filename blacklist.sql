@@ -1,25 +1,23 @@
 CREATE TABLE IF NOT EXISTS isac (
 	date text,
 	ip text,
-	type text,
-	primary key (date, ip, type)
+	typeName text,
+	primary key (date, ip, typeName)
 );
 
 CREATE TABLE IF NOT EXISTS country (
 	code text primary key,
-	name text
+	countryName text
 );
 
-CREATE TABLE IF NOT EXISTS type (
-	id integer primary key autoincrement,
-	name text UNIQUE,
+CREATE TABLE IF NOT EXISTS category (
+	categoryId integer primary key autoincrement,
+	categoryName text UNIQUE,
 	priority integer
 );
 
-CREATE TABLE IF NOT EXISTS detail (
-	name text primary key,
-	typeid integer,
-	FOREIGN KEY(typeid) REFERENCES type(id)
+CREATE TABLE IF NOT EXISTS type (
+	typeName text primary key,
+	categoryId integer,
+	FOREIGN KEY(categoryId) REFERENCES category(categoryId)
 );
-
-CREATE VIEW IF NOT EXISTS type_detail AS SELECT DISTINCT type FROM isac;
