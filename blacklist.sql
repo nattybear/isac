@@ -15,3 +15,10 @@ CREATE TABLE IF NOT EXISTS type (
 	name text UNIQUE,
 	priority integer
 );
+
+CREATE TABLE IF NOT EXISTS detail (
+	id integer primary key autoincrement,
+	name text UNIQUE,
+	type INTEGER,
+	FOREIGN KEY(type) REFERENCES type(id)
+);
