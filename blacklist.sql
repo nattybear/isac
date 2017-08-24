@@ -12,6 +12,6 @@ CREATE TABLE IF NOT EXISTS country (
 
 CREATE TABLE IF NOT EXISTS type (
 	id integer primary key autoincrement,
-	name text,
+	name text UNIQUE,
 	priority integer
 );
