@@ -17,9 +17,8 @@ CREATE TABLE IF NOT EXISTS type (
 );
 
 CREATE TABLE IF NOT EXISTS detail (
-	id integer primary key autoincrement,
-	name text UNIQUE,
-	type INTEGER,
+	name text primary key,
+	type integer,
 	FOREIGN KEY(type) REFERENCES type(id)
 );
 
