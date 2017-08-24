@@ -18,8 +18,8 @@ CREATE TABLE IF NOT EXISTS type (
 
 CREATE TABLE IF NOT EXISTS detail (
 	name text primary key,
-	type integer,
-	FOREIGN KEY(type) REFERENCES type(id)
+	typeid integer,
+	FOREIGN KEY(typeid) REFERENCES type(id)
 );
 
 CREATE VIEW IF NOT EXISTS type_detail AS SELECT DISTINCT type FROM isac;
