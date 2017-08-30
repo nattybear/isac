@@ -1,23 +1,23 @@
-CREATE TABLE IF NOT EXISTS isac (
-	date text,
-	ip text,
-	typeName text,
-	primary key (date, ip, typeName)
-);
-
-CREATE TABLE IF NOT EXISTS country (
-	code text primary key,
-	countryName text
+CREATE TABLE IF NOT EXISTS ip (
+	ip TEXT PRIMARY KEY
 );
 
 CREATE TABLE IF NOT EXISTS category (
-	categoryId integer primary key autoincrement,
-	categoryName text UNIQUE,
-	priority integer
+	categoryid INTEGER PRIMARY KEY AUTOINCREMENT,
+	categoryname TEXT UNIQUE,
+	priority INTEGER
 );
 
-CREATE TABLE IF NOT EXISTS type (
-	typeName text primary key,
-	categoryId integer,
-	FOREIGN KEY(categoryId) REFERENCES category(categoryId)
+CREATE TABLE IF NOT EXISTS subcategory (
+	subcategoryid INTEGER PRIMARY KEY AUTOINCREMENT,
+	subcategoryname TEXT UNIQUE,
+	categoryid INTEGER,
+	FOREIGN KEY(categoryid) REFERENCES category(categoryid)
+);
+
+CREATE TABLE IF NOT EXISTS ip_subcategory (
+	ip TEXT,
+	subcategoryid INTEGER,
+	FOREIGN KEY(ip) REFERENCES ip(ip),
+	FOREIGN KEY(subcategoryid) REFERENCES subcategory(subcategoryid)
 );
