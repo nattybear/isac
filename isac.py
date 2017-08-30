@@ -91,22 +91,20 @@ def phising(text):
 		t.append((i, '피싱사이트'))
 	return t
 
+# ip만을 찾는 정규식 작성
+# 모든 ip를 전부 찾아서 ip 테이블에 데이터 입력
+def getallip(text):
+	p = re.compile('\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}')
+	m = p.findall(text)
+	return m
+
 def main():
-	# 요주의 IP 탐지현황 테이블 작업하기
-	# 요주의 IP 탐지현황 테이블은 4번째 테이블이다.
-	batch((4, 1, 3))
-	# 신규 요주의 IP는 6번째 테이블이다.
-	batch((6, 1, 3))
-	# 전자적 침해시도 주요 내역은 정규식으로 작업한다.
-	data = getip(b)
-	insert('insert into isac values (?,?,?)', data)
-	# 피싱/파밍사이트 작업
-	data = phising(b)
-	insert('insert into isac values (?,?,?)', data)
+	ip = getallip(b)
+	print(ip)
 	# 마찬가지 이유로 데이터베이스의 잦은 입출력 방지를 위해서
 	# 모든 작업이 끝나고 마지막에 데이터베이스 연결을 끊는다.
-	con.commit()
-	con.close()
+	#con.commit()
+	#con.close()
 	
 if __name__ == '__main__':
 	main()
