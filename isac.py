@@ -81,19 +81,29 @@ def getallip(text):
 	return l
 
 # 데이터베이스에 데이터를 입력하기 위한 함수 작성
+# 이 함수에 넣을 데이터는 하나의 레코드에 칼럼이 하나라도
+# 튜플 형식으로 넣어야 한다.
 def insert(data, table):
-	print(data)
 	length = len(data[0])
-	print(length)
+	question = []
+	for i in range(length): question.append('?')
+	question = ','.join(question)
+	tmp = "INSERT INTO %s VALUES (%s)" % (table, question)
+	for i in data:
+		try:
+			cur.execute(tmp, i)
+		except IntegrityError as e:
+			print(e, i)
+			continue
 
 def main():
 	ip = getallip(b)
-	insert(ip, "test")
+	insert(ip, "ip")
 	
 	# 마찬가지 이유로 데이터베이스의 잦은 입출력 방지를 위해서
 	# 모든 작업이 끝나고 마지막에 데이터베이스 연결을 끊는다.
-	#con.commit()
-	#con.close()
+	con.commit()
+	con.close()
 	
 if __name__ == '__main__':
 	main()
