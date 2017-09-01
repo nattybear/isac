@@ -47,7 +47,11 @@ for i in b:
 	# 데이터를 쉼표로 구분
 	t = t.split(',')
 	# 데이터베이스에 데이터를 입력
-	cur.execute(qry, t)
+	try:
+		cur.execute(qry, t)
+	except IntegrityError as e:
+		print(e, t)
+		continue
 
 con.commit()
 con.close()
