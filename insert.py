@@ -1,5 +1,9 @@
 #!/usr/bin/python3
 
+# 범용 스크립트로 사용이 가능하다.
+# 칼럼명을 명시해야 하는 경우에도
+# 두번째 인자로 테이블명과 함께 테이블명을 입력하면 그만이다.
+
 from sqlite3 import connect, IntegrityError
 from sys import argv
 
