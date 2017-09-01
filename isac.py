@@ -42,15 +42,14 @@ def tr(num):
 # 이 함수는 두개의 칼럼만 출력 할 수 있다.
 # 입력된 리스트 중에 span 태그만 모아서
 # 하나의 리스트로 반환한다.
-def span(_list, _tuple):
+def span(_list):
 	# 전체 결과를 담을 임시 리스트를 생성
 	t = []
 	# 파싱 할 칼럼 번호를 지정
-	a, b = _tuple
 	# 테이블 헤더는 제외
 	for i in _list[1:]:
 		span = i.find_all('span')
-		t.append((span[a].string, span[b].string))
+		t.append((span[1].string, span[3].string))
 	return t
 
 # 전자적 침해 시도에서 아이피 주소와 공격 유형을 파싱하는 정규식 함수
@@ -97,8 +96,9 @@ def insert(data, table):
 			continue
 
 def main():
-	ip = getallip(b)
-	insert(ip, "ip")
+	# 모든 아이피를 추출해서 데이터베이스에 데이터를 입력
+	#ip = getallip(b)
+	#insert(ip, "ip")
 	
 	# 마찬가지 이유로 데이터베이스의 잦은 입출력 방지를 위해서
 	# 모든 작업이 끝나고 마지막에 데이터베이스 연결을 끊는다.
