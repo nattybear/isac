@@ -36,3 +36,8 @@ create table "ip/attacktype/src" (
 	foreign key(attacktypeid) references attacktype(attacktypeid),
 	foreign key(srcid) references src(srcid)
 );
+
+create table country (
+	countrycode text primary key,
+	countryname text unique
+);
