@@ -3,6 +3,7 @@
 
 from docx import Document
 from sys import argv
+from isac import ipcountry, insert, con
 
 doc = Document(argv[1])
 
@@ -23,3 +24,8 @@ for table, col in ipindex:
 		if "IP Address" not in cell.text:
 			iplist.append((cell.text,))
 
+ip = ipcountry(iplist)
+insert(ip, "ip")
+
+con.commit()
+con.close()
