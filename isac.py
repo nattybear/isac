@@ -3,6 +3,7 @@
 from sqlite3 import connect, IntegrityError
 from bs4 import BeautifulSoup
 from sys import argv
+from whois import get
 import re
 
 # 프로그램의 인자로 htm 파일을 받는다.
@@ -64,7 +65,11 @@ def make_row(data):
 		attacktypename = i[1]
 		# 아이피와 공격유형에 해당하는 공격유형 아이디 값을 데이터베이스에 넣기 위한 쿼리를 작성
 		cur.execute('SELECT attacktypeid FROM attacktype WHERE attacktypename="%s"' % attacktypename)
-		attacktypeid= cur.fetchone()[0]
+		try:
+			attacktypeid = cur.fetchone()[0]
+		except TypeError as e:
+			print(e, i)
+			continue
 		t.append((date, ip, attacktypeid, 1))
 	return t
 
@@ -95,6 +100,11 @@ def getallip(text):
 		l.append((i,))
 	return l
 
+# 아이피 리스트를 받아서 국가코드를 붙여서 리턴 
+# 잘 쓰지 않아던 list comprehension을 써봤다.
+# 확실히 코드가 짧아지긴 한다.
+def ipcountry(data): return [(i[0], get(i[0])) for i in data]
+
 # 데이터베이스에 데이터를 입력하기 위한 함수 작성
 # 이 함수에 넣을 데이터는 하나의 레코드에 칼럼이 하나라도
 # 튜플 형식으로 넣어야 한다.
@@ -113,7 +123,7 @@ def insert(data, table):
 
 def main():
 	# 모든 아이피를 추출해서 데이터베이스에 데이터를 입력
-	ip = getallip(b)
+	ip = ipcountry(getallip(b))
 	insert(ip, "ip")
 
 	# 요주의 IP 탐지현황은 4번째 테이블이다.
