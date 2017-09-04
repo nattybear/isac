@@ -43,3 +43,14 @@ create table country (
 	countrycode text primary key,
 	countryname text unique
 );
+
+create view isacview as
+	select ip.ip, country.countryname, attacktype.attacktypename, type.typename, src.srcname
+	from "ip/attacktype/src"
+	join ip on ip.ip="ip/attacktype/src".ip
+	join country on ip.countrycode=country.countrycode
+	join attacktype on "ip/attacktype/src".attacktypeid=attacktype.attacktypeid
+	join type on attacktype.typeid=type.typeid
+	join src on "ip/attacktype/src".srcid=src.srcid
+	join level on type.levelid=level.levelid
+	order by priority;
