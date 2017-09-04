@@ -6,27 +6,13 @@ from sys import argv
 from whois import get
 import re
 
-# 프로그램의 인자로 htm 파일을 받는다.
-# htm 파일을 읽을 때는 'utf-16-le' 인코딩으로 읽는다.
-f = open(argv[1], encoding='utf-16-le')
-b = f.read()
-f.close()
-
-# 등록일을 파싱하기 위한 정규식을 작성
-p = re.compile('<td>(\d{4}[.]\d{2}[.]\d{2})</td>')
-m = p.search(b)
-# date 전역 변수에 등록일을 저장
-date = m.group(1)
-
-# html 파싱을 위해 BeautifulSoup 객체를 생성
-s = BeautifulSoup(b, 'html.parser')
-
 # 데이터베이스에 연결한다.
 # 함수 안에 선언하면 데이터가 입력 될 때마다
 # 연결을 하기 때문에 속도면에서 손해이므로
 # 함수 밖에서 먼저 연결 객체를 생성한다.
 con = connect('blacklist.db')
 cur = con.cursor()
+
 # 외래키 지원 옵션을 활성화하기 위한 쿼리
 cur.execute("PRAGMA foreign_keys = ON;")
 
@@ -122,6 +108,22 @@ def insert(data, table):
 			continue
 
 def main():
+	# 프로그램의 인자로 htm 파일을 받는다.
+	# htm 파일을 읽을 때는 'utf-16-le' 인코딩으로 읽는다.
+	f = open(argv[1], encoding='utf-16-le')
+	b = f.read()
+	f.close()
+
+	# 등록일을 파싱하기 위한 정규식을 작성
+	p = re.compile('<td>(\d{4}[.]\d{2}[.]\d{2})</td>')
+	m = p.search(b)
+	# date 전역 변수에 등록일을 저장
+	date = m.group(1)
+
+	# html 파싱을 위해 BeautifulSoup 객체를 생성
+	s = BeautifulSoup(b, 'html.parser')
+
+
 	# 모든 아이피를 추출해서 데이터베이스에 데이터를 입력
 	ip = ipcountry(getallip(b))
 	insert(ip, "ip")
