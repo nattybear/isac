@@ -29,4 +29,5 @@ def get(ip):
 	return j['whois']['countryCode']
 
 if __name__ == '__main__':
-	get(argv[1])
+	cc = get(argv[1])
+	print(cc)
