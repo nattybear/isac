@@ -1,5 +1,7 @@
 create table ip (
-	ip text primary key
+	ip text primary key,
+	countrycode text,
+	foreign key(countrycode) references country(countrycode)
 );
 
 create table attacktype (
