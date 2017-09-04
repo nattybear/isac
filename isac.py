@@ -57,6 +57,20 @@ def span(_list):
 		t.append((date, ip, attacktypeid, 1))
 	return t
 
+# (ip, 공격유형이름) 데이터를 넣으면
+# (날짜, 아이피, 공격유형아이디, 출처아이디) 형태를 리턴
+# 이 함수가 준 데이터는 insert 함수에서 사용 가능
+def make_row(data):
+	t = []
+	for i in data:
+		ip = data[0]
+		attacktypename = data[1]
+		# 아이피와 공격유형에 해당하는 공격유형 아이디 값을 데이터베이스에 넣기 위한 쿼리를 작성
+		cur.execute('SELECT attacktypeid FROM attacktype WHERE attacktypename="%s"' % attacktypename)
+		attacktypeid= cur.fetchone()[0]
+		t.append((date, ip, attacktypeid, 1))
+	return t
+
 # 전자적 침해 시도에서 아이피 주소와 공격 유형을 파싱하는 정규식 함수
 # 테이블의 태그를 이용하지 않고 처음부터 끝까지 정규식만을 이용해서 작성
 # 테이블 칼럼이 기존 테이블과 다르기 때문에 이렇게 작성함
@@ -107,8 +121,14 @@ def main():
 
 	# 요주의 IP 탐지현황은 4번째 테이블이다.
 	# 해당 테이블을 데이터베이스에 입력한다.
-	l = tr(4)
-	r = span(l)
+	l1 = tr(4)
+	r1 = span(l1)
+	# 신규 요주의 IP는 6번째 테이블이다.
+	l2 = tr(6)
+	r2 = span(l2)
+	# 전자적 침해시도 주요 내역 파싱
+	r3 = getip(b)
+	r = r1 + r2 + r3
 	insert(r, '"ip/attacktype/src"')
 	
 	# 마찬가지 이유로 데이터베이스의 잦은 입출력 방지를 위해서
