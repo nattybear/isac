@@ -51,10 +51,7 @@ def span(_list):
 		span = i.find_all('span')
 		ip = span[1].string
 		attacktypename = span[3].string
-		# 아이피와 공격유형에 해당하는 공격유형 아이디 값을 데이터베이스에 넣기 위한 쿼리를 작성
-		cur.execute('SELECT attacktypeid FROM attacktype WHERE attacktypename="%s"' % attacktypename)
-		attacktypeid= cur.fetchone()[0]
-		t.append((date, ip, attacktypeid, 1))
+		t.append((ip, attacktypename))
 	return t
 
 # (ip, 공격유형이름) 데이터를 넣으면
@@ -63,8 +60,8 @@ def span(_list):
 def make_row(data):
 	t = []
 	for i in data:
-		ip = data[0]
-		attacktypename = data[1]
+		ip = i[0]
+		attacktypename = i[1]
 		# 아이피와 공격유형에 해당하는 공격유형 아이디 값을 데이터베이스에 넣기 위한 쿼리를 작성
 		cur.execute('SELECT attacktypeid FROM attacktype WHERE attacktypename="%s"' % attacktypename)
 		attacktypeid= cur.fetchone()[0]
@@ -91,7 +88,7 @@ def phising(text):
 # ip만을 찾는 정규식 작성
 # 모든 ip를 전부 찾아서 ip 테이블에 데이터 입력
 def getallip(text):
-	p = re.compile('>(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})<')
+	p = re.compile('>(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?:<| )')
 	m = p.findall(text)
 	l = []
 	for i in m:
@@ -116,20 +113,19 @@ def insert(data, table):
 
 def main():
 	# 모든 아이피를 추출해서 데이터베이스에 데이터를 입력
-	#ip = getallip(b)
-	#insert(ip, "ip")
+	ip = getallip(b)
+	insert(ip, "ip")
 
 	# 요주의 IP 탐지현황은 4번째 테이블이다.
 	# 해당 테이블을 데이터베이스에 입력한다.
-	l1 = tr(4)
-	r1 = span(l1)
+	l1 = make_row(span(tr(4)))
 	# 신규 요주의 IP는 6번째 테이블이다.
-	l2 = tr(6)
-	r2 = span(l2)
+	l2 = make_row(span(tr(6)))
 	# 전자적 침해시도 주요 내역 파싱
-	r3 = getip(b)
-	r = r1 + r2 + r3
-	insert(r, '"ip/attacktype/src"')
+	l3 = make_row(getip(b))
+	l4 = make_row(phising(b))
+	l = l1 + l2 + l3 + l4
+	insert(l, '"ip/attacktype/src"')
 	
 	# 마찬가지 이유로 데이터베이스의 잦은 입출력 방지를 위해서
 	# 모든 작업이 끝나고 마지막에 데이터베이스 연결을 끊는다.
