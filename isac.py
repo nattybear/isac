@@ -26,6 +26,8 @@ s = BeautifulSoup(b, 'html.parser')
 # 함수 밖에서 먼저 연결 객체를 생성한다.
 con = connect('blacklist.db')
 cur = con.cursor()
+# 외래키 지원 옵션을 활성화하기 위한 쿼리
+cur.execute("PRAGMA foreign_keys = ON;")
 
 # 입력으로 테이블 번호를 받는다.
 # tbody 태그를 모두 찾은 뒤에
@@ -38,8 +40,6 @@ def tr(num):
 	return c
 
 # 첫번째 인자로 tr 태그의 리스트를 받는다.
-# 두번째 인자로 출력할 칼럼 번호를 받는다.
-# 이 함수는 두개의 칼럼만 출력 할 수 있다.
 # 입력된 리스트 중에 span 태그만 모아서
 # 하나의 리스트로 반환한다.
 def span(_list):
@@ -49,7 +49,12 @@ def span(_list):
 	# 테이블 헤더는 제외
 	for i in _list[1:]:
 		span = i.find_all('span')
-		t.append((span[1].string, span[3].string))
+		ip = span[1].string
+		attacktypename = span[3].string
+		# 아이피와 공격유형에 해당하는 공격유형 아이디 값을 데이터베이스에 넣기 위한 쿼리를 작성
+		cur.execute('SELECT attacktypeid FROM attacktype WHERE attacktypename="%s"' % attacktypename)
+		attacktypeid= cur.fetchone()[0]
+		t.append((date, ip, attacktypeid, 1))
 	return t
 
 # 전자적 침해 시도에서 아이피 주소와 공격 유형을 파싱하는 정규식 함수
@@ -99,6 +104,12 @@ def main():
 	# 모든 아이피를 추출해서 데이터베이스에 데이터를 입력
 	#ip = getallip(b)
 	#insert(ip, "ip")
+
+	# 요주의 IP 탐지현황은 4번째 테이블이다.
+	# 해당 테이블을 데이터베이스에 입력한다.
+	l = tr(4)
+	r = span(l)
+	insert(r, '"ip/attacktype/src"')
 	
 	# 마찬가지 이유로 데이터베이스의 잦은 입출력 방지를 위해서
 	# 모든 작업이 끝나고 마지막에 데이터베이스 연결을 끊는다.
