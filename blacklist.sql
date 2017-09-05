@@ -31,27 +31,18 @@ create table "ip/attacktype/src" (
 	ip text,
 	attacktypeid integer,
 	srcid integer,
-	unique(day, ip, attacktypeid, srcid),
+	levelid integer,
+	unique(day, ip, attacktypeid, srcid, levelid),
 	foreign key(ip) references ip(ip),
 	foreign key(attacktypeid) references attacktype(attacktypeid),
 	foreign key(srcid) references src(srcid)
+	foreign key(levelid) references level(levelid)
 );
 
 create table country (
 	countrycode text primary key,
 	countryname text unique
 );
-
-create view isacview as
-	select ip.ip, country.countryname, attacktype.attacktypename, type.typename, src.srcname
-	from "ip/attacktype/src"
-	join ip on ip.ip="ip/attacktype/src".ip
-	join country on ip.countrycode=country.countrycode
-	join attacktype on "ip/attacktype/src".attacktypeid=attacktype.attacktypeid
-	join type on attacktype.typeid=type.typeid
-	join src on "ip/attacktype/src".srcid=src.srcid
-	join level on type.levelid=level.levelid
-	order by priority;
 
 create table file (
 	md5 text primary key
