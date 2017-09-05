@@ -54,3 +54,7 @@ create view isacview as
 	join src on "ip/attacktype/src".srcid=src.srcid
 	join level on type.levelid=level.levelid
 	order by priority;
+
+create table file (
+	md5 text primary key
+);
