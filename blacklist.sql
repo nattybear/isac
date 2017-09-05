@@ -13,9 +13,7 @@ create table attacktype (
 
 create table type (
 	typeid integer primary key autoincrement,
-	typename text unique,
-	levelid integer,
-	foreign key(levelid) references level(levelid)
+	typename text unique
 );
 create table level (
 	levelid integer primary key autoincrement,
