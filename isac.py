@@ -125,9 +125,11 @@ def main():
 	p = re.compile('<td>(\d{4}[.]\d{2}[.]\d{2})</td>')
 	m = p.search(b)
 	# date 전역 변수에 등록일을 저장
+	global date
 	date = m.group(1)
 
 	# html 파싱을 위해 BeautifulSoup 객체를 생성
+	global s
 	s = BeautifulSoup(b, 'html.parser')
 
 	# 모든 아이피를 추출해서 데이터베이스에 데이터를 입력
