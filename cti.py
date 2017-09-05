@@ -19,19 +19,23 @@ for i, table in enumerate(doc.tables):
 		if "Attack Type" in head.text:
 			attacktypeindex.append((i, j))
 
-# 위에서 조사한 테이블 번호와 칼럼 번호를 이용해서
-# 문서의 모든 아이피 주소를 담은 리스트를 만든다.
-iplist = []
-for table, col in ipindex:
-	cells = doc.tables[table].columns[col].cells
-	for cell in cells:
-		if "IP Address" not in cell.text:
-			iplist.append((cell.text,))
+# 테이블과 칼럼 번호가 적혀 있는 인덱스를 튜플로 받고
+# 칼럼 이름을 인자로 넣어주면
+# 테이블에서 해당 칼럼의 데이터만 모아서 리스트로 리턴
+def parsecol(index, name):
+	t = []
+	for table, col in index:
+		cells = doc.tables[table].columns[col].cells
+		for cell in cells:
+			if name not in cell.text:
+				t.append((cell.text))
+	return t
 
 #ip = ipcountry(iplist)
 #insert(ip, "ip")
 
-con.commit()
-con.close()
+#con.commit()
+#con.close()
 
-print(attacktypeindex)
+t = parsecol(ipindex, "IP Address")
+print(t)
