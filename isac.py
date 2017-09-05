@@ -49,6 +49,11 @@ def make_row(data):
 	for i in data:
 		ip = i[0]
 		attacktypename = i[1]
+		# 공격유형에 '악성코드' 문자열이 있으면
+		# 레벨에 fatal(1)을 할당하고
+		# 그렇지 않으면 그냥 warning(4)을 할당한다.
+		level = 4
+		if '악성코드' in attacktypename: level = 1
 		# 아이피와 공격유형에 해당하는 공격유형 아이디 값을 데이터베이스에 넣기 위한 쿼리를 작성
 		cur.execute('SELECT attacktypeid FROM attacktype WHERE attacktypename="%s"' % attacktypename)
 		try:
@@ -56,7 +61,9 @@ def make_row(data):
 		except TypeError as e:
 			print(e, i)
 			continue
-		t.append((date, ip, attacktypeid, 1))
+		# 4번째 칼럼에 레벨아이디를 입력한다.
+		# 스키마가 변경되었기 때문이다.
+		t.append((date, ip, attacktypeid, 1, level))
 	return t
 
 # 전자적 침해 시도에서 아이피 주소와 공격 유형을 파싱하는 정규식 함수
@@ -122,7 +129,6 @@ def main():
 
 	# html 파싱을 위해 BeautifulSoup 객체를 생성
 	s = BeautifulSoup(b, 'html.parser')
-
 
 	# 모든 아이피를 추출해서 데이터베이스에 데이터를 입력
 	ip = ipcountry(getallip(b))
