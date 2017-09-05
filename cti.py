@@ -28,14 +28,18 @@ def parsecol(index, name):
 		cells = doc.tables[table].columns[col].cells
 		for cell in cells:
 			if name not in cell.text:
-				t.append((cell.text))
+				t.append((cell.text,))
 	return t
 
+# 아이피만 추출해서 국가를 조회하고
+# 데이터베이스에 입력한다.
+#iplist = parsecol(ipindex, "IP Address")
 #ip = ipcountry(iplist)
 #insert(ip, "ip")
 
+attacktypelist = parsecol(attacktypeindex, "Attack Type")
+for i in set(attacktypelist):
+	print(i)
+
 #con.commit()
 #con.close()
-
-t = parsecol(ipindex, "IP Address")
-print(t)
