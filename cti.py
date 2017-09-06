@@ -72,8 +72,6 @@ m= p.search(date)
 date = '-'.join([m.group(1), m.group(2), m.group(3)])
 
 threat = []
-phising = []
-rfi = []
 urllist = []
 
 for table in doc.tables:
@@ -98,8 +96,6 @@ for table in doc.tables:
 				url = row.cells[0].text
 				ip = row.cells[1].text
 				target = row.cells[3].text
-				t = (date, ip, 7, 2, 4) 
-				phising.append(t)
 				t = (url, ip, 4, 2)
 				urllist.append(t)
 	# 'RFI' 테이블은 칼럼의 개수가 3개이다.
@@ -107,20 +103,14 @@ for table in doc.tables:
 		for row in table.rows[1:]:
 			url = row.cells[0].text
 			ip = row.cells[1].text
-			t = (date, ip, 16, 2, 2)
-			rfi.append(t)
 			t = (url, ip, 6, 2)
 			urllist.append(t)
 
 # 사이버 위협 정보를 데이터베이스에 입력한다.
 #insert(threat, '"ip/attacktype/src"')
-# 피싱 사이트를 데이터베이스에 입력한다.
-#insert(phising, '"ip/attacktype/src"')
 # URL을 데이터베이스에 입력한다.
 # URL은 피싱사이트와 RFI를 합친 것이다.
 insert(urllist, 'url')
-# RFI 아이피를 데이터베이스에 입력한다.
-insert(rfi, '"ip/attacktype/src"')
 
 con.commit()
 con.close()
