@@ -56,3 +56,12 @@ create table target (
 	targetid integer primary key autoincrement,
 	targetname text unique
 );
+
+create table url (
+	url text,
+	ip text,
+	targetid integer,
+	unique(url, ip, targetid),
+	foreign key(ip) references ip(ip),
+	foreign key(targetid) references target(targetid)
+);
