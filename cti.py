@@ -36,28 +36,26 @@ def parsecol(index, name):
 	return t
 
 # URL에서 도메인만 파싱하는 정규식
-def getdomain(url):
+def gethost(url):
 	p = compile('hxxps{0,1}://(.*?)/')
 	m = p.search(url[0])
-	print(url)
 	return (m.group(1),)
 
 # 아이피만 추출해서 국가를 조회하고
 # 데이터베이스에 입력한다.
 #iplist = parsecol(ipindex, "IP Address")
 #ip = ipcountry(iplist)
-#insert(ip, "ip")
+#insert(ip, 'ip')
 
 # 공격유형을 중복제거하고 화면에 출력
 #attacktypelist = parsecol(attacktypeindex, "Attack Type")
 #for i in set(attacktypelist):
 #	print(i)
 
-# URL 리스트를 화면에 출력
+# 호스트를 데이터베이스에 입력
 urllist = parsecol(urlindex, "URL")
-domain = map(getdomain, urllist)
-for i in domain:
-	print(i)
+host = list(map(gethost, urllist))
+insert(host, 'host')
 
-#con.commit()
-#con.close()
+con.commit()
+con.close()
