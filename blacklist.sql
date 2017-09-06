@@ -63,9 +63,11 @@ create table url (
 	typeid integer,
 	srcid integer,
 	levelid,
-	unique(url, ip, typeid, srcid, levelid),
+	host text,
+	unique(url, ip, typeid, srcid, levelid, host),
 	foreign key(ip) references ip(ip),
 	foreign key(typeid) references type(typeid),
 	foreign key(srcid) references src(srcid),
-	foreign key(levelid) references level(levelid)
+	foreign key(levelid) references level(levelid),
+	foreign key(host) references host(host)
 );
