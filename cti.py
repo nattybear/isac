@@ -47,9 +47,9 @@ def gethost(url):
 
 # 아이피만 추출해서 국가를 조회하고
 # 데이터베이스에 입력한다.
-iplist = parsecol(ipindex, "IP Address")
-ip = ipcountry(iplist)
-insert(ip, 'ip')
+#iplist = parsecol(ipindex, "IP Address")
+#ip = ipcountry(iplist)
+#insert(ip, 'ip')
 
 # 공격유형을 중복제거하고 화면에 출력
 #attacktypelist = parsecol(attacktypeindex, "Attack Type")
@@ -74,9 +74,11 @@ date = '-'.join([m.group(1), m.group(2), m.group(3)])
 threat = []
 phising = []
 rfi = []
+urllist = []
 
 for table in doc.tables:
 	for cell in table.rows[0].cells:
+		# 'Level' 칼럼은 사이버 위협 정보 테이블에만 존재한다.
 		if 'Level' in cell.text:
 			for row in table.rows[1:]:
 				ip = row.cells[1].text
@@ -90,17 +92,23 @@ for table in doc.tables:
 				level = cur.fetchone()[0]
 				t = (date, ip, attacktype, 2, level)
 				threat.append(t)
+		# 'Target' 칼럼은 피싱사이트 테이블에만 존재한다.
 		if 'Target' in cell.text:
 			for row in table.rows[1:]:
 				url = row.cells[0].text
 				ip = row.cells[1].text
+				target = row.cells[3].text
 				t = (date, ip, 7, 2, 4) 
 				phising.append(t)
+				t = (url, ip, 4, 2)
+				urllist.append(t)
 
 # 사이버 위협 정보를 데이터베이스에 입력한다.
-insert(threat, '"ip/attacktype/src"')
+#insert(threat, '"ip/attacktype/src"')
 # 피싱 사이트를 데이터베이스에 입력한다.
-insert(phising, '"ip/attacktype/src"')
+#insert(phising, '"ip/attacktype/src"')
+# URL을 데이터베이스에 입력한다.
+insert(urllist, 'url')
 
 con.commit()
 con.close()
