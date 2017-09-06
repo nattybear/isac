@@ -3,7 +3,7 @@
 
 from docx import Document
 from sys import argv
-from isac import ipcountry, insert, con
+from isac import ipcountry, insert, con, cur
 from re import compile
 
 doc = Document(argv[1])
@@ -47,9 +47,9 @@ def gethost(url):
 
 # 아이피만 추출해서 국가를 조회하고
 # 데이터베이스에 입력한다.
-#iplist = parsecol(ipindex, "IP Address")
-#ip = ipcountry(iplist)
-#insert(ip, 'ip')
+iplist = parsecol(ipindex, "IP Address")
+ip = ipcountry(iplist)
+insert(ip, 'ip')
 
 # 공격유형을 중복제거하고 화면에 출력
 #attacktypelist = parsecol(attacktypeindex, "Attack Type")
@@ -62,8 +62,37 @@ def gethost(url):
 #insert(host, 'host')
 
 # 타겟을 화면에 출력
-targetlist = parsecol(targetindex, "Target")
-for i in set(targetlist): print(i)
+#targetlist = parsecol(targetindex, "Target")
+#for i in set(targetlist): print(i)
+
+# 문서의 날짜를 찾는 코드
+date = doc.tables[0].rows[2].cells[1].text
+p = compile('(\d{4})년 (\d{2})월 (\d{2})일')
+m= p.search(date)
+date = '-'.join([m.group(1), m.group(2), m.group(3)])
+
+threat = []
+phising = []
+rfi = []
+
+for table in doc.tables:
+	for cell in table.rows[0].cells:
+		if 'Level' in cell.text:
+			for row in table.rows[1:]:
+				ip = row.cells[1].text
+				attacktype = row.cells[3].text
+				level = row.cells[4].text
+				# 공격유형 이름을 아이디로 변환한다.
+				cur.execute('select attacktypeid from attacktype where attacktypename="%s"' % attacktype)
+				attacktype = cur.fetchone()[0]
+				# 레벨 이름을 레벨 아이디로 변환한다.
+				cur.execute('select levelid from level where levelname="%s"' % level)
+				level = cur.fetchone()[0]
+				t = (date, ip, attacktype, 2, level)
+				threat.append(t)
+
+# 사이버 위협 정보를 데이터베이스에 입력한다.
+insert(threat, '"ip/attacktype/src"')
 
 con.commit()
 con.close()
