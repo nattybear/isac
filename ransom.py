@@ -1,10 +1,13 @@
 #!/usr/bin/python3
 
 from sys import argv
-from sqlite3 import connect
+from sqlite3 import connect, IntegrityError, ProgrammingError
 
 # 큰 따옴표를 제거하는 함수
 def delquo(text): return text.replace('"', '')
+
+# '","'를 구분으로 문자열을 쪼개는 함수
+def splitcom(text): return text.split('","')
 
 def main():
 	# 데이터베이스에 연결한다.
@@ -18,7 +21,7 @@ def main():
 	# 웹 요청으로 변경 예정.
 	f = open(argv[1], 'rb')
 	lines = f.readlines()
-	for i in lines[:10]:
+	for i in lines:
 		# 아스키는 127까지인데 해당 숫자가 넘어가는 데이터가 존재
 		# charmap 인코딩을 사용하면 시스템에서 사용하는 인코딩으로 해석
 		i = i.decode('charmap')
@@ -27,7 +30,18 @@ def main():
 		# 주석은 무시한다.
 		if i[0] != '#':
 			t = list(map(delquo, i.split(',')))
-			for i in t: print(i)
+			try:
+				cur.execute(sql, t)
+			except IntegrityError as e:
+				print(e, t)
+				continue
+			except ProgrammingError as e:
+				print(e, t)
+				continue
+	
+	# 데이터베이스 연결을 끊는다.
+	con.commit()
+	con.close()
 
 if __name__ == '__main__':
 	main()
