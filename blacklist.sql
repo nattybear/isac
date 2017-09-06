@@ -47,3 +47,7 @@ create table country (
 create table file (
 	md5 text primary key
 );
+
+create table host (
+	host text primary key
+);
