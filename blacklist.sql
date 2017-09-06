@@ -51,3 +51,8 @@ create table file (
 create table host (
 	host text primary key
 );
+
+create table target (
+	targetid integer primary key autoincrement,
+	targetname text unique
+);
