@@ -71,3 +71,17 @@ create table url (
 	foreign key(levelid) references level(levelid),
 	foreign key(host) references host(host)
 );
+
+create table ransom (
+	firstseen text,
+	threat text,
+	malware text,
+	host text,
+	url text,
+	status text,
+	registrar text,
+	ip text,
+	asn text,
+	country text,
+	unique(firstseen, threat, malware, host, url, status, registrar, ip, asn, country)
+);
