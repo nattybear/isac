@@ -11,9 +11,11 @@ doc = Document(argv[1])
 # "IP Address"라는 문자열이 있는 테이블 번호와
 # 칼럼의 번호를 파악하고 리스트에 튜플로 저장한다.
 # "Attack Type"도 같은 원리로 동작.
+# 다른 칼럼도 마찬가지
 ipindex = []
 attacktypeindex= []
-urlindex= []
+urlindex = []
+targetindex = []
 for i, table in enumerate(doc.tables):
 	for j, head in enumerate(table.rows[0].cells):
 		if "IP Address" in head.text:
@@ -22,6 +24,8 @@ for i, table in enumerate(doc.tables):
 			attacktypeindex.append((i, j))
 		if "URL" in head.text:
 			urlindex.append((i, j))
+		if "Target" in head.text:
+			targetindex.append((i, j))
 
 # 테이블과 칼럼 번호가 적혀 있는 인덱스를 튜플로 받고
 # 칼럼 이름을 인자로 넣어주면
@@ -53,9 +57,13 @@ def gethost(url):
 #	print(i)
 
 # 호스트를 데이터베이스에 입력
-urllist = parsecol(urlindex, "URL")
-host = list(map(gethost, urllist))
-insert(host, 'host')
+#urllist = parsecol(urlindex, "URL")
+#host = list(map(gethost, urllist))
+#insert(host, 'host')
+
+# 타겟을 화면에 출력
+targetlist = parsecol(targetindex, "Target")
+for i in set(targetlist): print(i)
 
 con.commit()
 con.close()
