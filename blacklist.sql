@@ -60,6 +60,10 @@ create table target (
 create table url (
 	url text,
 	ip text,
-	unique(url, ip),
+	typeid integer,
+	srcid integer,
+	unique(url, ip, typeid, srcid),
 	foreign key(ip) references ip(ip),
+	foreign key(typeid) references type(typeid),
+	foreign key(srcid) references src(srcid)
 );
