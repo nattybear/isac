@@ -4,6 +4,7 @@
 from docx import Document
 from sys import argv
 from isac import ipcountry, insert, con
+from re import compile
 
 doc = Document(argv[1])
 
@@ -12,12 +13,15 @@ doc = Document(argv[1])
 # "Attack Type"도 같은 원리로 동작.
 ipindex = []
 attacktypeindex= []
+urlindex= []
 for i, table in enumerate(doc.tables):
 	for j, head in enumerate(table.rows[0].cells):
 		if "IP Address" in head.text:
 			ipindex.append((i, j))
 		if "Attack Type" in head.text:
 			attacktypeindex.append((i, j))
+		if "URL" in head.text:
+			urlindex.append((i, j))
 
 # 테이블과 칼럼 번호가 적혀 있는 인덱스를 튜플로 받고
 # 칼럼 이름을 인자로 넣어주면
@@ -31,14 +35,28 @@ def parsecol(index, name):
 				t.append((cell.text,))
 	return t
 
+# URL에서 도메인만 파싱하는 정규식
+def getdomain(url):
+	p = compile('hxxps{0,1}://(.*?)/')
+	m = p.search(url[0])
+	print(url)
+	return (m.group(1),)
+
 # 아이피만 추출해서 국가를 조회하고
 # 데이터베이스에 입력한다.
 #iplist = parsecol(ipindex, "IP Address")
 #ip = ipcountry(iplist)
 #insert(ip, "ip")
 
-attacktypelist = parsecol(attacktypeindex, "Attack Type")
-for i in set(attacktypelist):
+# 공격유형을 중복제거하고 화면에 출력
+#attacktypelist = parsecol(attacktypeindex, "Attack Type")
+#for i in set(attacktypelist):
+#	print(i)
+
+# URL 리스트를 화면에 출력
+urllist = parsecol(urlindex, "URL")
+domain = map(getdomain, urllist)
+for i in domain:
 	print(i)
 
 #con.commit()
