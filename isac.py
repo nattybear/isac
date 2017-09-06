@@ -126,7 +126,9 @@ def main():
 	m = p.search(b)
 	# date 전역 변수에 등록일을 저장
 	global date
-	date = m.group(1)
+	# 날짜 표기 형식을 점(.)에서 대시(-)로 변경함.
+	# sqlite3 내장 함수 date()의 형식이 대시(-)이기 때문.
+	date = m.group(1).replace('.', '-')
 
 	# html 파싱을 위해 BeautifulSoup 객체를 생성
 	global s
