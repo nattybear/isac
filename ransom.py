@@ -29,7 +29,7 @@ def main():
 		i = i.replace('\n', '')
 		# 주석은 무시한다.
 		if i[0] != '#':
-			t = list(map(delquo, i.split(',')))
+			t = list(map(delquo, splitcom(i)))
 			try:
 				cur.execute(sql, t)
 			except IntegrityError as e:
