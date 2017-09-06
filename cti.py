@@ -90,9 +90,17 @@ for table in doc.tables:
 				level = cur.fetchone()[0]
 				t = (date, ip, attacktype, 2, level)
 				threat.append(t)
+		if 'Target' in cell.text:
+			for row in table.rows[1:]:
+				url = row.cells[0].text
+				ip = row.cells[1].text
+				t = (date, ip, 7, 2, 4) 
+				phising.append(t)
 
 # 사이버 위협 정보를 데이터베이스에 입력한다.
 insert(threat, '"ip/attacktype/src"')
+# 피싱 사이트를 데이터베이스에 입력한다.
+insert(phising, '"ip/attacktype/src"')
 
 con.commit()
 con.close()
