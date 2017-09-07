@@ -5,6 +5,7 @@ from sqlite3 import connect, IntegrityError, ProgrammingError
 from datetime import date, timedelta
 from re import compile
 from whois import get
+from isac import con, cur, insert
 
 # 큰 따옴표를 제거하는 함수
 def delquo(text): return text.replace('"', '')
@@ -27,10 +28,6 @@ typedic = {
 
 
 def main():
-	# 데이터베이스에 연결한다.
-	con = connect('blacklist.db')
-	cur = con.cursor()
-	# 쿼리를 작성한다.
 	sql = 'insert into ransom values (%s)' % ','.join(['?']*10)
 
 	# CSV 파일을 연다.
@@ -71,6 +68,7 @@ def main():
 	cur.execute(sql)
 	# 결과를 받아온다.
 	rows = cur.fetchall()
+	hostlist = []
 	for row in rows:
 		host = row[0]
 		country = row[1]
@@ -79,7 +77,12 @@ def main():
 		docu = "%s ransomware %s" % (malware, threat)
 		t = [host, country, docu, typedic[threat], "ransomware tracker"]
 		if not isip(host): t[1] = "도메인"
+		# 모든 호스트를 리스트로 만든다.
+		hostlist.append((host,))
 		print(t)
+
+	# 모든 호스트를 데이터베이스에 입력한다.
+	insert(hostlist, 'host')
 
 	# 데이터베이스 연결을 끊는다.
 	con.commit()
