@@ -5,7 +5,7 @@ from sqlite3 import connect, IntegrityError, ProgrammingError
 from datetime import date, timedelta
 from re import compile
 from whois import get
-from isac import con, cur, insert
+from isac import con, cur, insert, ipcountry
 
 # 큰 따옴표를 제거하는 함수
 def delquo(text): return text.replace('"', '')
@@ -61,8 +61,8 @@ def main():
 	ago = date.today() - timedelta(days=3)
 	# 쿼리를 작성한다.
 	sql = ''' 
-		SELECT host, country.countryname, malware, threat
-		FROM ransom JOIN country ON ransom.country = country.countrycode
+		SELECT host, malware, threat, url, ip
+		FROM ransom
 		WHERE firstseen > "%s";''' % ago
 	# 쿼리를 실행한다.
 	cur.execute(sql)
@@ -70,12 +70,14 @@ def main():
 	rows = cur.fetchall()
 	hostlist = []
 	attacktypelist = []
+	iplist = []
 	for row in rows:
 		host = row[0]
-		country = row[1]
-		malware = row[2]
-		threat = row[3]
+		malware = row[1]
+		threat = row[2]
 		docu = "%s ransomware %s" % (malware, threat)
+		url = row[3]
+		ip = row[4]
 		# 모든 호스트를 리스트로 만든다.
 		hostlist.append((host,))
 		# 모든 문서작성용 멘트를 리스트로 만든다.
@@ -85,10 +87,17 @@ def main():
 		typeid = cur.fetchone()[0]
 		t = (docu, typeid)
 		attacktypelist.append(t)
+		# 모든 아이피를 리스트로 만든다.
+		# 아이피가 여러개인 경우를 잘 생각해야 한다.
+		IPs = ip.split('|')
+		for ip in IPs: iplist.append((ip,))
 
-	# 모든 호스트를 데이터베이스에 입력한다.
-	insert(hostlist, 'host')
-	insert(attacktypelist, 'attacktype(attacktypename, typeid)')
+	# 모은 리스트들을 데이터베이스에 입력한다.
+	#insert(hostlist, 'host')
+	#insert(attacktypelist, 'attacktype(attacktypename, typeid)')
+	# 아이피 리스트를 (아이피, 국가) 리스트로 변환한다.
+	iplist = ipcountry(iplist)
+	#insert(iplist, 'ip')
 
 	# 데이터베이스 연결을 끊는다.
 	con.commit()
