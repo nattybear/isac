@@ -71,6 +71,7 @@ def main():
 	hostlist = []
 	attacktypelist = []
 	iplist = []
+	urllist = []
 	for row in rows:
 		host = row[0]
 		malware = row[1]
@@ -90,7 +91,11 @@ def main():
 		# 모든 아이피를 리스트로 만든다.
 		# 아이피가 여러개인 경우를 잘 생각해야 한다.
 		IPs = ip.split('|')
-		for ip in IPs: iplist.append((ip,))
+		for ip in IPs:
+			iplist.append((ip,))
+			# url 테이블에 입력할 데이터를 만든다.
+			t = (url, ip, typeid, 3, 4, host)
+			urllist.append(t)
 
 	# 모은 리스트들을 데이터베이스에 입력한다.
 	#insert(hostlist, 'host')
@@ -98,6 +103,8 @@ def main():
 	# 아이피 리스트를 (아이피, 국가) 리스트로 변환한다.
 	iplist = ipcountry(iplist)
 	#insert(iplist, 'ip')
+	# url 테이블에 데이터를 입력한다.
+	insert(urllist, 'url')
 
 	# 데이터베이스 연결을 끊는다.
 	con.commit()
