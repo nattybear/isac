@@ -4,6 +4,7 @@ from sys import argv
 from sqlite3 import connect, IntegrityError, ProgrammingError
 from datetime import date, timedelta
 from re import compile
+from whois import get
 
 # 큰 따옴표를 제거하는 함수
 def delquo(text): return text.replace('"', '')
@@ -16,7 +17,15 @@ def isip(text):
 	p = compile('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}')
 	m = p.search(text)
 	return True if m else False
-	
+
+# 유형을 정의한 딕셔너리
+typedic = {
+		'C2'			: 'C&C 서버',
+		'Payment Site'		: '유해사이트',
+		'Distribution Site'	: '악성코드'
+	  }
+
+
 def main():
 	# 데이터베이스에 연결한다.
 	con = connect('blacklist.db')
@@ -55,8 +64,8 @@ def main():
 	ago = date.today() - timedelta(days=3)
 	# 쿼리를 작성한다.
 	sql = ''' 
-		SELECT host, malware, threat
-		FROM ransom
+		SELECT host, country.countryname, malware, threat
+		FROM ransom JOIN country ON ransom.country = country.countrycode
 		WHERE firstseen > "%s";''' % ago
 	# 쿼리를 실행한다.
 	cur.execute(sql)
@@ -64,10 +73,12 @@ def main():
 	rows = cur.fetchall()
 	for row in rows:
 		host = row[0]
-		malware = row[1]
-		threat = row[2]
+		country = row[1]
+		malware = row[2]
+		threat = row[3]
 		docu = "%s ransomware %s" % (malware, threat)
-		t = (host, "도메인", docu, "ransomware tracker")
+		t = [host, country, docu, typedic[threat], "ransomware tracker"]
+		if not isip(host): t[1] = "도메인"
 		print(t)
 
 	# 데이터베이스 연결을 끊는다.
