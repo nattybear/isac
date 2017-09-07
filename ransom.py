@@ -74,6 +74,7 @@ def main():
 	attacktypelist = []
 	iplist = []
 	urllist = []
+	ipurl = []
 	for row in rows:
 		host = row[0]
 		malware = row[1]
