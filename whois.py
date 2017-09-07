@@ -26,7 +26,11 @@ def get(ip):
 	# json 문자열 객체를 파이썬 딕셔너리 객체로 변환 할 수 있다.
 	j = loads(b)
 	# 국가 코드를 리턴한다.
-	return j['whois']['countryCode']
+	try:
+		return j['whois']['countryCode']
+	except KeyError as e:
+		print(ip, j)
+		return 0
 
 if __name__ == '__main__':
 	cc = get(argv[1])
