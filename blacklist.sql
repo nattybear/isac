@@ -58,13 +58,14 @@ create table target (
 );
 
 create table url (
+	date text,
 	url text,
 	ip text,
 	typeid integer,
 	srcid integer,
 	levelid,
 	host text,
-	unique(url, ip, typeid, srcid, levelid, host),
+	unique(date, url, ip, typeid, srcid, levelid, host),
 	foreign key(ip) references ip(ip),
 	foreign key(typeid) references type(typeid),
 	foreign key(srcid) references src(srcid),
