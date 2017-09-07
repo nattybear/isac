@@ -19,15 +19,15 @@ def isip(text):
 	m = p.search(text)
 	return True if m else False
 
-# 유형을 정의한 딕셔너리
-typedic = {
-		'C2'			: 'C&C 서버',
-		'Payment Site'		: '유해사이트',
-		'Distribution Site'	: '악성코드'
-	  }
-
+# 문서작성용 멘트에 따른 유형을 매칭한 딕셔너리
+dic =	{
+	'Payment Site'		: '유해사이트',
+	'Distribution Site'	: '악성코드',
+	'C2'			: 'C&C 서버'
+	}
 
 def main():
+	# 쿼리 템플릿을 작성
 	sql = 'insert into ransom values (%s)' % ','.join(['?']*10)
 
 	# CSV 파일을 연다.
@@ -69,20 +69,26 @@ def main():
 	# 결과를 받아온다.
 	rows = cur.fetchall()
 	hostlist = []
+	attacktypelist = []
 	for row in rows:
 		host = row[0]
 		country = row[1]
 		malware = row[2]
 		threat = row[3]
 		docu = "%s ransomware %s" % (malware, threat)
-		t = [host, country, docu, typedic[threat], "ransomware tracker"]
-		if not isip(host): t[1] = "도메인"
 		# 모든 호스트를 리스트로 만든다.
 		hostlist.append((host,))
-		print(t)
+		# 모든 문서작성용 멘트를 리스트로 만든다.
+		# attacktype 테이블에 입력할 것이다.
+		sql = 'SELECT typeid FROM type WHERE typename="%s"' % dic[threat]
+		cur.execute(sql)
+		typeid = cur.fetchone()[0]
+		t = (docu, typeid)
+		attacktypelist.append(t)
 
 	# 모든 호스트를 데이터베이스에 입력한다.
 	insert(hostlist, 'host')
+	insert(attacktypelist, 'attacktype(attacktypename, typeid)')
 
 	# 데이터베이스 연결을 끊는다.
 	con.commit()
