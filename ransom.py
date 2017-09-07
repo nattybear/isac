@@ -61,7 +61,7 @@ def main():
 	ago = date.today() - timedelta(days=3)
 	# 쿼리를 작성한다.
 	sql = ''' 
-		SELECT host, malware, threat, url, ip
+		SELECT host, malware, threat, url, ip, firstseen
 		FROM ransom
 		WHERE firstseen > "%s";''' % ago
 	# 쿼리를 실행한다.
@@ -79,6 +79,7 @@ def main():
 		docu = "%s ransomware %s" % (malware, threat)
 		url = row[3]
 		ip = row[4]
+		day = row[5].split()[0]
 		# 모든 호스트를 리스트로 만든다.
 		hostlist.append((host,))
 		# 모든 문서작성용 멘트를 리스트로 만든다.
@@ -94,7 +95,7 @@ def main():
 		for ip in IPs:
 			iplist.append((ip,))
 			# url 테이블에 입력할 데이터를 만든다.
-			t = (url, ip, typeid, 3, 4, host)
+			t = (day, url, ip, typeid, 3, 4, host)
 			urllist.append(t)
 
 	# 모은 리스트들을 데이터베이스에 입력한다.
