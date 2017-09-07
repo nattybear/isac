@@ -6,6 +6,7 @@ from datetime import date, timedelta
 from re import compile
 from whois import get
 from isac import con, cur, insert, ipcountry
+from urllib.request import urlopen
 
 # 큰 따옴표를 제거하는 함수
 def delquo(text): return text.replace('"', '')
@@ -33,7 +34,9 @@ def main():
 	# CSV 파일을 연다.
 	# 코드가 완성되면 파일 입력에서
 	# 웹 요청으로 변경 예정.
-	f = open(argv[1], 'rb')
+	#f = open(argv[1], 'rb')
+	# 웹 요청으로 변경
+	f = urlopen('https://ransomwaretracker.abuse.ch/feeds/csv/')
 	lines = f.readlines()
 	for i in lines:
 		# 아스키는 127까지인데 해당 숫자가 넘어가는 데이터가 존재
@@ -45,7 +48,7 @@ def main():
 		if i[0] != '#':
 			t = list(map(delquo, splitcom(i)))
 			try:
-				#cur.execute(sql, t)
+				cur.execute(sql, t)
 				pass
 			# 중복 에러, 외래키 에러
 			except IntegrityError as e:
@@ -56,7 +59,6 @@ def main():
 				print(e, t)
 				continue
 
-	# 엑셀 취합 형태로 출력하기
 	# 이틀 전 날짜를 구한다.
 	ago = date.today() - timedelta(days=3)
 	# 쿼리를 작성한다.
@@ -93,17 +95,18 @@ def main():
 		# 아이피가 여러개인 경우를 잘 생각해야 한다.
 		IPs = ip.split('|')
 		for ip in IPs:
-			iplist.append((ip,))
-			# url 테이블에 입력할 데이터를 만든다.
-			t = (day, url, ip, typeid, 3, 4, host)
-			urllist.append(t)
+			if ip != '':
+				iplist.append((ip,))
+				# url 테이블에 입력할 데이터를 만든다.
+				t = (day, url, ip, typeid, 3, 4, host)
+				urllist.append(t)
 
 	# 모은 리스트들을 데이터베이스에 입력한다.
-	#insert(hostlist, 'host')
-	#insert(attacktypelist, 'attacktype(attacktypename, typeid)')
+	insert(hostlist, 'host')
+	insert(attacktypelist, 'attacktype(attacktypename, typeid)')
 	# 아이피 리스트를 (아이피, 국가) 리스트로 변환한다.
 	iplist = ipcountry(iplist)
-	#insert(iplist, 'ip')
+	insert(iplist, 'ip')
 	# url 테이블에 데이터를 입력한다.
 	insert(urllist, 'url')
 
