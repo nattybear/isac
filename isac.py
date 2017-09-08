@@ -145,6 +145,7 @@ def main():
 	l2 = make_row(span(tr(6)))
 	# 전자적 침해시도 주요 내역 파싱
 	l3 = make_row(getip(b))
+	# 피싱 파싱
 	l4 = make_row(phising(b))
 	l = l1 + l2 + l3 + l4
 	insert(l, '"ip/attacktype/src"')
