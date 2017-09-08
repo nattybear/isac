@@ -71,8 +71,7 @@ create table url (
 	foreign key(typeid) references type(typeid),
 	foreign key(srcid) references src(srcid),
 	foreign key(levelid) references level(levelid),
-	foreign key(host) references host(host),
-	foreign key(hosttype) references hosttype(name)
+	foreign key(host) references host(host)
 );
 
 create table ransom (
