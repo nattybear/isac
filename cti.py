@@ -48,9 +48,9 @@ def gethost(url):
 
 # 아이피만 추출해서 국가를 조회하고
 # 데이터베이스에 입력한다.
-#iplist = parsecol(ipindex, "IP Address")
-#ip = ipcountry(iplist)
-#insert(ip, 'ip')
+iplist = parsecol(ipindex, "IP Address")
+ip = ipcountry(iplist)
+insert(ip, 'ip')
 
 # 공격유형을 중복제거하고 화면에 출력
 #attacktypelist = parsecol(attacktypeindex, "Attack Type")
@@ -58,9 +58,9 @@ def gethost(url):
 #	print(i)
 
 # 호스트를 데이터베이스에 입력
-#urllist = parsecol(urlindex, "URL")
-#host = list(map(gethost, urllist))
-#insert(host, 'host')
+urllist = parsecol(urlindex, "URL")
+host = list(map(gethost, urllist))
+insert(host, 'host')
 
 # 타겟을 화면에 출력
 #targetlist = parsecol(targetindex, "Target")
