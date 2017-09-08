@@ -65,12 +65,14 @@ create table url (
 	srcid integer,
 	levelid,
 	host text,
-	unique(date, url, ip, typeid, srcid, levelid, host),
+	hosttype text,
+	unique(date, url, ip, typeid, srcid, levelid, host, hosttype),
 	foreign key(ip) references ip(ip),
 	foreign key(typeid) references type(typeid),
 	foreign key(srcid) references src(srcid),
 	foreign key(levelid) references level(levelid),
-	foreign key(host) references host(host)
+	foreign key(host) references host(host),
+	foreign key(hosttype) references hosttype(name)
 );
 
 create table ransom (
