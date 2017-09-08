@@ -75,6 +75,7 @@ def main():
 	iplist = []
 	urllist = []
 	iptype= []
+	hosttypelist= []
 	for row in rows:
 		host = row[0]
 		malware = row[1]
@@ -104,15 +105,19 @@ def main():
 				# url 테이블에 입력할 데이터를 만든다.
 				t = (day, url, ip, typeid, 3, 4, host, hosttype)
 				urllist.append(t)
+				sql = '''
+					SELECT attacktypeid
+					FROM attacktype
+					WHERE attacktypename="%s";''' % docu
+				cur.execute(sql)
+				attacktypeid = cur.fetchone()[0]
+				# 호스트가 도메인이라면 공격유형을 정해준다.
+				if hosttype == 'domain':
+					t = (day, host, attacktypeid, 3)
+					hosttypelist.append(t)
 				# 호스트가 아이피라면 'ip/attacktype/src' 테이블에
 				# 입력 할 데이터를 만든다.
-				if hosttype == 'ip':
-					sql = '''
-						SELECT attacktypeid
-						FROM attacktype
-						WHERE attacktypename="%s";''' % docu
-					cur.execute(sql)
-					attacktypeid = cur.fetchone()[0]
+				else:
 					t = (day, ip, attacktypeid, 3, 2) 
 					iptype.append(t)
 
@@ -126,6 +131,8 @@ def main():
 	insert(urllist, 'url')
 	# 호스트가 아이피인 데이터를 "ip/attacktype/src" 테이블에 입력
 	insert(iptype, '"ip/attacktype/src"')
+	# 호스트와 공격유형을 "host/type" 테이블에 입력
+	insert(hosttypelist, '"host/type"')
 
 	# 데이터베이스 연결을 끊는다.
 	con.commit()
