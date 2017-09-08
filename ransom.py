@@ -74,7 +74,7 @@ def main():
 	attacktypelist = []
 	iplist = []
 	urllist = []
-	ipurl = []
+	iptype= []
 	for row in rows:
 		host = row[0]
 		malware = row[1]
@@ -104,6 +104,17 @@ def main():
 				# url 테이블에 입력할 데이터를 만든다.
 				t = (day, url, ip, typeid, 3, 4, host, hosttype)
 				urllist.append(t)
+				# 호스트가 아이피라면 'ip/attacktype/src' 테이블에
+				# 입력 할 데이터를 만든다.
+				if hosttype == 'ip':
+					sql = '''
+						SELECT attacktypeid
+						FROM attacktype
+						WHERE attacktypename="%s";''' % docu
+					cur.execute(sql)
+					attacktypeid = cur.fetchone()[0]
+					t = (day, ip, attacktypeid, 3, 2) 
+					iptype.append(t)
 
 	# 모은 리스트들을 데이터베이스에 입력한다.
 	insert(hostlist, 'host')
@@ -113,6 +124,8 @@ def main():
 	insert(iplist, 'ip')
 	# url 테이블에 데이터를 입력한다.
 	insert(urllist, 'url')
+	# 호스트가 아이피인 데이터를 "ip/attacktype/src" 테이블에 입력
+	insert(iptype, '"ip/attacktype/src"')
 
 	# 데이터베이스 연결을 끊는다.
 	con.commit()
