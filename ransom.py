@@ -96,10 +96,13 @@ def main():
 		# 아이피가 여러개인 경우를 잘 생각해야 한다.
 		IPs = ip.split('|')
 		for ip in IPs:
+			# 아이피가 공백이면 아래 코드를 실행하지 않는다.
 			if ip != '':
 				iplist.append((ip,))
+				# 호스트가 아이피인지 문자열이지 확인한다.
+				hosttype = 'ip' if isip(host) else 'domain'
 				# url 테이블에 입력할 데이터를 만든다.
-				t = (day, url, ip, typeid, 3, 4, host)
+				t = (day, url, ip, typeid, 3, 4, host, hosttype)
 				urllist.append(t)
 
 	# 모은 리스트들을 데이터베이스에 입력한다.

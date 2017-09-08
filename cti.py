@@ -5,6 +5,7 @@ from docx import Document
 from sys import argv
 from isac import ipcountry, insert, con, cur
 from re import compile
+from ransom import isip
 
 doc = Document(argv[1])
 
@@ -96,18 +97,22 @@ for table in doc.tables:
 				url = row.cells[0].text
 				ip = row.cells[1].text
 				target = row.cells[3].text
-				t = (date, url, ip, 4, 2, 4, gethost((url,))[0])
+				host = gethost((url,))[0]
+				hosttype = 'ip' if isip(host) else 'domain'
+				t = (date, url, ip, 4, 2, 4, host, hosttype)
 				urllist.append(t)
 	# 'RFI' 테이블은 칼럼의 개수가 3개이다.
 	if len(table.rows[0].cells) == 3:
 		for row in table.rows[1:]:
 			url = row.cells[0].text
 			ip = row.cells[1].text
-			t = (date, url, ip, 6, 2, 1, gethost((url,))[0])
+			host = gethost((url,))[0]
+			hosttype = 'ip' if isip(host) else 'domain'
+			t = (date, url, ip, 6, 2, 1, host, hosttype)
 			urllist.append(t)
 
 # 사이버 위협 정보를 데이터베이스에 입력한다.
-#insert(threat, '"ip/attacktype/src"')
+insert(threat, '"ip/attacktype/src"')
 # URL을 데이터베이스에 입력한다.
 # URL은 피싱사이트와 RFI를 합친 것이다.
 insert(urllist, 'url')
