@@ -37,7 +37,7 @@ def span(_list):
 	for i in _list[1:]:
 		span = i.find_all('span')
 		ip = span[1].string
-		attacktypename = span[3].string
+		attacktypename = span[3].string.replace('\n', '')
 		t.append((ip, attacktypename))
 	return t
 
