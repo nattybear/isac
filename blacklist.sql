@@ -87,3 +87,14 @@ create table ransom (
 	country text,
 	unique(firstseen, threat, malware, host, url, status, registrar, ip, asn, country)
 );
+
+create table "host/type" (
+	day text,
+	host text,
+	attacktypeid integer,
+	srcid integer,
+	unique(day, host, attacktypeid, srcid),
+	foreign key(host) references host(host),
+	foreign key(attacktypeid) references attacktype(attacktypeid),
+	foreign key(srcid) references src(srcid)
+);
