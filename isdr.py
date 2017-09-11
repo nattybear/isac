@@ -3,6 +3,7 @@ from sys import argv
 from bs4 import BeautifulSoup
 from sqlite3 import connect, IntegrityError
 from whois import get
+from cti import gethost
 
 # 파일을 열어서 내용을 읽는다.
 f = open(argv[1])
@@ -112,6 +113,20 @@ for i in cur.fetchall():
 		cur.execute(sql2, (i[0], id))
 	except IntegrityError as e:
 		print(e, i)
+		continue
+
+# 호스트 네임만 데이터베이스에 입력한다.
+# 원본 테이블에는 호스트 네임은 없고
+# URL만 있으므로 별도 연산을 한다.
+cur.execute('select url from isdr where url != "N/A"')
+sql = 'insert into host values (?,?)'
+for i in cur.fetchall():
+	host = gethost(i)
+	t = (i[0], host[0])
+	try:
+		cur.execute(sql, t)
+	except IntegrityError as e:
+		print(e, t)
 		continue
 
 # 관계형 데이터베이스 작업이 끝나면
