@@ -94,7 +94,7 @@ def getallip(text):
 	return l
 
 # 아이피 리스트를 받아서 국가코드를 붙여서 리턴 
-# 잘 쓰지 않아던 list comprehension을 써봤다.
+# 잘 쓰지 않았던 list comprehension을 써봤다.
 # 확실히 코드가 짧아지긴 한다.
 def ipcountry(data): return [(i[0], get(i[0])) for i in data]
 
