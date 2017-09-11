@@ -49,7 +49,8 @@ create table file (
 );
 
 create table host (
-	host text primary key
+	hostname text primary key,
+	hosttype text
 );
 
 create table target (
