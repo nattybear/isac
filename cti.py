@@ -42,7 +42,7 @@ def parsecol(index, name):
 
 # URL에서 도메인만 파싱하는 정규식
 def gethost(url):
-	p = compile('hxxps{0,1}://(.*?)/')
+	p = compile('://(.*?)/')
 	m = p.search(url[0])
 	return (m.group(1),)
 
