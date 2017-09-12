@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from sqlite3 import connect, IntegrityError
 from whois import get
 from cti import gethost
+from ransom import isip
 
 # 파일을 열어서 내용을 읽는다.
 f = open(argv[1])
@@ -52,7 +53,7 @@ cur.execute(sql)
 sql = 'insert into isdr values (?,?,?,?)'
 
 # 원본 데이터를 임시 테이블에 그대로 저장함.
-# 이제 SQL을 이용해서 데이터를 가공 할 수 있다.
+# 이제 SQL을 이용해서 데이터를 가공할 수 있다.
 for row in rows:
 	t = []
 	for td in row:
@@ -116,10 +117,21 @@ for i in cur.fetchall():
 		continue
 
 # 호스트 네임만 데이터베이스에 입력한다.
-# 원본 테이블에는 호스트 네임은 없고
-# URL만 있으므로 별도 연산을 한다.
 cur.execute('select url from isdr where url != "N/A"')
 sql = 'insert into host values (?,?)'
+for i in cur.fetchall():
+	hostname = gethost(i)[0]
+	hosttype = 'ip' if isip(hostname) else 'host'
+	t = (hostname, hosttype)
+	try:
+		cur.execute(sql, t)
+	except IntegrityError as e:
+		print(e, t)
+		continue
+
+# url만 데이터베이스에 입력한다.
+cur.execute('select url from isdr where url != "N/A"')
+sql = 'insert into url values (?,?)'
 for i in cur.fetchall():
 	host = gethost(i)
 	t = (i[0], host[0])
@@ -129,6 +141,21 @@ for i in cur.fetchall():
 		print(e, t)
 		continue
 
+# 호스트와 아이피 관계를 입력한다.
+cur.execute('select ip, url from isdr where url != "N/A"')
+sql1 = 'select hostname from url where url="%s"'
+sql2 = 'insert into "ip/host" values (?,?)'
+for i in cur.fetchall():
+	cur.execute(sql1 % i[1])
+	hostname = cur.fetchone()[0]
+	for ip in i[0].split('|'):
+		t = (ip, hostname)
+		try:
+			cur.execute(sql2, t)
+		except IntegrityError as e:
+			print(e, t)
+			continue
+			
 # 관계형 데이터베이스 작업이 끝나면
 # 원본 테이블은 삭제한다.
 sql = 'drop table isdr'

@@ -60,9 +60,9 @@ create table target (
 
 create table url (
 	url text,
-	host text,
-	unique(url, host)
-	foreign key(host) references host(host)
+	hostname text,
+	unique(url, hostname),
+	foreign key(hostname) references host(hostname)
 );
 
 create table ransom (
@@ -88,4 +88,12 @@ create table "host/type" (
 	foreign key(host) references host(host),
 	foreign key(attacktypeid) references attacktype(attacktypeid),
 	foreign key(srcid) references src(srcid)
+);
+
+create table "ip/host" (
+	ip text,
+	hostname text,
+	unique(ip, hostname),
+	foreign key(ip) references ip(ip),
+	foreign key(hostname) references host(hostname)
 );
